@@ -1,0 +1,12 @@
+Package: dieroller
+Type: Package
+Title: Die roller simulation
+Version: 0.1.0
+Author: Keqin Cao
+Maintainer: The package maintainer <caokeqin0211@gmail.com>
+Description: The package in general provides functions to simulate rolling a die. From the package, we can generate the probability of the sides, summaries, and barplot of frequency. 
+License: GPL-2
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.0.1
+VignetteBuilder: knitr

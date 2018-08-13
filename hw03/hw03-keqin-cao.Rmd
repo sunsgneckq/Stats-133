@@ -1,0 +1,89 @@
+---
+title: "hw03-keqin-cao"
+author: "Keqin Cao"
+date: "3/11/2018"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+setwd('/Users/sunsgne/Desktop/Stat133/hw-stat133/hw03')
+knitr::opts_chunk$set(echo = TRUE,error=TRUE,fig.path ='images/' )
+dat<- read.csv('nba2017-roster.csv', sep = ",", header = TRUE)
+library("ggplot2")
+```
+
+```{bash 2.1}
+#2.1  Write a pipeline to obtain the unique team names, and redirect the output to a text fileteam-names.txt. Use head to display the first five lines of the created file (output shownbelown).
+cut -d "," -f 2 nba2017-roster.csv | sort -u  > team-names.txt
+head -n 5 team-names.txt 
+```
+
+```{bash 2.2}
+#2.2 Write a pipeline to obtain the unique positions, and redirect the output to a text fileposition-names.txt. Use head to display the first five lines of the created file (outputshown belown)
+cut -d "," -f 3 nba2017-roster.csv | sort -u  >position-names.txt
+head -n 5 position-names.txt 
+```
+
+```{bash 2.3}
+ 
+#Write a pipeline to obtain the counts (i.e. frequencies) of the different experience values,displayed from largest to smallest (i.e. descending order). Redirect the output to a text file experience-counts.txt. Use head to display the first five lines of the created file (output4 shown belown). The first column corresponds to count, the second column corresponds to experience
+cut -d "," -f 7  nba2017-roster.csv|sort|uniq -c|sort -nk1|sort -r> experience-counts.txt
+head -5 experience-counts.txt
+```
+
+
+```{bash 2.4}
+#Use output redirection commands to create a CSV file LAC.csv containing data for the LAC team (Los Angeles Clippers). Your CSV file should include column names. Use cat to display the content of the created file (output shown belown).
+grep "position\|LAC"  nba2017-roster.csv > LAC.csv
+cat LAC.csv
+```
+
+```{bash 2.5}
+# Write a pipeline to display the age frequencies of LAL players. The first columncorresponds to count, the second column corresponds to age.
+grep "LAL" nba2017-roster.csv| cut -d "," -f 6|sort| uniq -c
+
+```
+ 
+```{bash 2.6}
+#Write a pipeline to find the number of players in CLE (Cleveland) team; the output should be just the number of players.
+grep "CLE" nba2017-roster.csv|wc -l
+```
+
+```{bash 2.7}
+#2.7) Write pipelines to create a CSV file gsw-height-weight.csv that contains the player,height and weight of GSW players. Your CSV file should include column names. Use cat to display the file contents:
+grep "GSW\|player" nba2017-roster.csv|cut -d, -f 1,4,5 > gsw-height-weight.csv
+cat gsw-height-weight.csv
+```
+ 
+```{bash 2.8}
+#Write pipelines to create a file top10-salaries.csv containing the top10 player salaries,arranged by salary from largest to smallest. Your CSV file should include column names.Use cat to display the file contents:
+cut -d "," -f 1,8 nba2017-roster.csv|sort -t"," -k 2 -n -r| head -10>1.csv
+grep "player\|salary" nba2017-roster.csv | cut -d "," -f 1,8 >2.csv
+cat 2.csv 1.csv >top10-salaries.csv
+cat top10-salaries.csv
+rm 1.csv
+rm 2.csv
+```
+ 
+```{r}
+library(knitr)
+source('code/binomial-functions.R')
+#Assume that the “successful” event is getting a “six” when rolling a die. Consider rolling a fair die 10 times. Use bin_probability() to find the probability of getting exactly 3 sixes.
+bin_probability(10,3,1/6)
+# Use bin_distribution() to obtain the distribution of the number of “sixes” when rolling a loaded die 10 times, in which the number “six” has probability of 0.25. Make a plot of this distribution.
+six<- bin_distribution(10, 0.25)
+six
+ggplot(six)+geom_line(aes(x= success, y=probability))+geom_point(aes(x= success, y=probability))
+# Use bin_probability(), and a for loop, to obtain the probability of getting more than 3 heads in 5 tosses with a biased coin of 35% chance of heads.
+probability = 0
+for (i in 4:5) {
+  probability = bin_probability(5,i, 0.35) + probability
+} 
+probability
+# Use bin_distribution() to obtain the probability distribution of the number of heads when tossing a loaded coin 15 times, with 35% chance of heads. Make a plot of this distribution.
+loadedcoin<-bin_distribution(15, 0.35)
+loadedcoin
+ggplot(loadedcoin)+geom_line(aes(x= success, y=probability))+geom_point(aes(x= success, y=probability))
+```
+
+ 

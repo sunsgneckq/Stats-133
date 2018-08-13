@@ -1,0 +1,148 @@
+---
+title: "hw05-keqin-cao"
+author: "Keqin Cao"
+date: "4/16/2018"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library("stringr")
+library("dieroller")
+set.seed(12)
+fair<- die()
+repetition<- 1000
+sides<- matrix(data = NA, nrow = 1000, ncol = 4)
+for (i in 1:repetition) {
+  sides[i, ]<- roll(fair, 4)$rolls
+  sides<- (sides)
+}
+
+counts<- c()
+for (i in 1:repetition){
+  count<- sum(str_detect(sides[i, ], "6"))
+  counts<- append(counts, count)
+}
+table(counts)/1000
+(sum(unname(table(counts)))-unname(table(counts))[1])/1000
+
+fair<- die()
+
+
+
+```
+
+```{r}
+set.seed(123)
+side<- c(1,2,3,4,5,6)
+repetition<- 1000
+sides2<- matrix(data = NA, nrow = 1000, ncol = 24)
+for (i in 1:repetition) {
+  sides2[i, ]<- roll(fair, 24)$rolls
+  sides2<- (sides2)
+}
+  
+side3<- c(1,2,3,4,5,6)
+repetition<- 1000
+sides3<- matrix(data = NA, nrow = 1000, ncol = 24)
+for (i in 1:repetition) {
+  sides3[i, ]<- roll(fair, 24)$rolls
+  sides3<- (sides3)
+}
+
+counts3<- vector(mode = "list", length = 1000)
+for (i in 1:repetition){
+  counts3[[i]]<- str_detect(sides2[i, ], "6")
+}
+
+counts4<- vector(mode = "list", length = 1000)
+for (i in 1:repetition){
+  counts4[[i]]<- str_detect(sides3[i, ], "6")
+}
+
+detect_double = c(rep(0,1000))
+for(i in 1:repetition){
+  for(j in 1:24){
+    if((counts3[[i]][j] + counts4[[i]][j] )==2 )
+      detect_double[i] = detect_double[i]  + 1
+  }
+   
+ }
+ bbb<- table(detect_double)
+
+(sum(unname(bbb))-unname(bbb)[1])/1000
+
+```
+
+```{r}
+#How to use the package Object Die
+fair_die <- die()
+fair_die
+weird_die <- die(sides = c('i', 'ii', 'iii', 'iv', 'v', 'vi'))
+weird_die
+loaded_die <- die(prob = c(0.075, 0.1, 0.125, 0.15, 0.20, 0.35))
+loaded_die
+```
+
+```{r}
+#How to use the package Object roll
+set.seed(123)
+fair50 <- roll(fair_die, times = 50)
+fair50
+names(fair50)
+fair50$rolls
+fair50$sides
+fair50$prob
+fair50$total
+# string die
+str_die <- die(
+sides = c('a', 'b', 'c', 'd', 'e', 'f'),
+prob = c(0.075, 0.1, 0.125, 0.15, 0.20, 0.35))
+str_die
+set.seed(123)
+str_rolls <- roll(str_die, times = 20)
+names(str_rolls)
+str_rolls
+```
+
+```{r}
+#How to use the package summary method Object roll
+set.seed(123)
+fair_50rolls <- roll(fair_die, times = 50)
+fair50_sum <- summary(fair_50rolls)
+fair50_sum
+# what's in the summary
+class(fair50_sum)
+names(fair50_sum)
+fair50_sum$freqs
+```
+```{r}
+#How to use package for plot method for roll object
+plot(fair_50rolls)
+```
+```{r}
+#Additional Methods
+# roll fair die
+set.seed(123)
+fair_die <- die()
+fair500 <- roll(fair_die, times = 500)
+# summary method
+summary(fair500)
+# extracting roll in position 500
+fair500[500]
+# replacing last roll
+fair500[500] <- 1
+fair500[500]
+summary(fair500)
+# adding 100 rolls
+set.seed(123)
+fair600 <- fair500 + 100
+fair600[500] <- 1
+summary(fair600)
+# plot method
+plot(fair500, 500)
+```
+

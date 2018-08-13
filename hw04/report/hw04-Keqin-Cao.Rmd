@@ -1,0 +1,186 @@
+---
+title: "hw04-keqin-cao"
+author: "Keqin Cao"
+date: "4/3/2018"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+setwd("~/Desktop/Stat133/hw-stat133/hw04/report")
+knitr::opts_chunk$set(echo = TRUE, fig.path = "../images/")
+```
+
+```{r}
+library("XML")
+library("stringr")
+library("ggplot2")
+source("../code/archive-functions.R")
+source("../code/regex-functions.R")
+```
+ 
+ 
+```{r}
+#1.4 Archive of "stringr"
+raw_data <- read_archive('stringr')
+print(raw_data)
+clean_data <- clean_archive(raw_data)
+print(clean_data)
+print(plot_archive(clean_data))
+#export csv file
+raw_data <- read_archive('stringr')
+clean_data<- clean_archive(raw_data)
+write.csv(clean_data, file = "../data/stringr-archive.csv")
+```
+```{r}
+#Verifying the type of the data:
+class(clean_data$name)
+class(clean_data$version)
+class(clean_data$date)
+class(clean_data$size)
+```
+```{r export CRAN}
+#1.5)
+raw_dataggplot <- read_archive('ggplot2')
+clean_dataggplot<- clean_archive(raw_dataggplot)
+write.csv(clean_dataggplot, file = "../data/ggplot2-archive.csv")
+
+raw_dataXLM <- read_archive('XML')
+clean_dataXLM<- clean_archive(raw_dataXLM)
+write.csv(clean_dataXLM, file = "../data/xml-archive.csv")
+
+raw_dataknitr<- read_archive('knitr')
+clean_dataknitr<- clean_archive(raw_dataknitr)
+write.csv(clean_dataknitr, file = "../data/knitr-archive.csv")
+
+raw_datadplyr<- read_archive('dplyr')
+clean_datadplyr<- clean_archive(raw_datadplyr)
+write.csv(clean_datadplyr, file = "../data/dplyr-archive.csv")
+```
+
+```{r combinedata plots}
+# 1.5) Archives of "splyr", "ggplot2", "XML", and "knitr"
+combinedata<- rbind(clean_datadplyr, clean_dataggplot, clean_dataknitr, clean_dataXLM)
+ggplot(combinedata)+ 
+  geom_step(mapping=aes(x=date, y=size,color= name))+xlab('date')+ylab('Size(Kilobytes)')+ggtitle("Plot all package in one frame")
+
+ggplot(combinedata)+ facet_wrap(~name, scales= "free")+geom_step(mapping=aes(x=date, y=size, color= factor(name)),size=0.6)+xlab('date')+ylab('Size(Kilobytes)')+ggtitle("Plot one package per facet (with free scales)")
+```
+ 
+```{r}
+#2.1
+split_chars('Go Bears!')
+split_chars('Expecto Patronum')
+#2.2
+vec <- c('G', 'o', ' ', 'B', 'e', 'a', 'r', 's', '!') 
+num_vowels(vec)
+#2.3
+count_vowels("The quick brown fox jumps over the lazy dog")
+count_vowels("THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG")
+#2.4
+reverse_chars("gattaca")
+reverse_chars("Lumox Maxima")
+#2.5
+reverse_words("sentence! this reverse")
+reverse_words("string")
+```
+
+
+
+
+
+
+```{r}
+dat<- read.csv("../data/text-emotion.csv", header = T)
+```
+
+```{r tweet}
+#3.1Count the number of characters in the tweet contents.
+#Method 1 with only counts
+tweetcharacc<- c(nchar(as.vector(dat$content)))
+head(tweetcharacc,1000)
+#method 2 with counts and tweets
+cc<- sapply(as.vector(dat$content), nchar)
+head(cc,5)
+# Display a summary() of such counts, and plot a histogram of these counts. To plot the histogram, use a bin width of 5 units: 1-5, 6-10, 11-15, 16-20, etc. In other words: the first bin involves tweets between 1 and 5 characters (inclusive), the second bin involves tweets containing between 6 and 10 characters (inclusive), and so on.
+summary(tweetcharacc)
+hist(tweetcharacc, xlab= "tweet character count", xlim = c(0,180), ylim = c(0,2500), breaks = seq(1,180,by=5))
+
+```
+```{r use + sign}
+#Method 2 + sign ()
+#Count the number of @ mentions (i.e. mention to another user) in the tweet contents.
+c = sapply(dat$content, function(x) str_extract_all(x, pattern = '@\\w{1,15}'))
+frequencies_table <- c()
+for(i in 1:length(c)){
+  b = length( c[[i]])
+  frequencies_table <- append(frequencies_table,b)
+}
+sum(frequencies_table)
+#Display such frequencies, and make a barplot of these counts (i.e. number of tweets with 0 mentions, with 1 mention, with 2 mentions, etc).
+table(frequencies_table)
+##Bar plot
+barplot(table(frequencies_table), main = 'Frequency of the mention counts', xlab = "mention times", ylab = "frequency" )
+barplot(log(table(frequencies_table)), main = 'Frequency of the mention counts', xlab = "mention times", ylab = "frequency" )
+```
+
+```{r mention use split pattern first }
+#Count the number of @ mentions (i.e. mention to another user) in the tweet contents.
+##str_extract_all(dat$content, pattern = '(@\\w{1,15})+')
+a<- sapply(str_split(dat$content, pattern = " "), function(x) {sum(str_detect(x, pattern = "@\\w{1,15}"))})
+head(a,100)
+##summary
+summary(a)
+##sum
+sum(a)
+#Display such frequencies, and make a barplot of these counts (i.e. number of tweets with 0 mentions, with 1 mention, with 2 mentions, etc).
+table<- table(a)
+table
+#Bar plot
+barplot(table, main = 'Frequency of the mention counts', xlab = "mention times", ylab = "frequency")
+```
+
+
+
+```{r}
+#Also write code to display the content of the tweet with 10 mentions. 
+c = sapply(dat$content, function(x) str_extract_all(x, pattern = '@\\w{1,15}'))
+
+x <- 0
+for(i in 1:length(c)){
+  x[i] <- length(c[[i]]) == 10
+}
+as.character(dat$content)[which(x == 1)]
+```
+
+```{r Hashtags}
+#3.3) Hashtags
+#Count the number of hashtags in the tweet contents
+e <- sapply(dat$content, function(x) str_extract_all(x, pattern = '#[[:alpha:]][[:alnum:]]*'))
+frequencies_table2 <- c()
+for(i in 1:length(e)){
+  d = length( e[[i]])
+  frequencies_table2 <- append(frequencies_table2,d)
+}
+sum(frequencies_table2)
+#Display such frequencies, and make a barplot of these counts (i.e. number of tweets with 0 hashtags, with 1 hashtag, with 2 hashtags, etc).
+table2 <- table(frequencies_table2)
+table2
+barplot(table2, main = 'Frequency of the Hashtags counts', xlab = "mention times", ylab = "frequency")
+barplot(log(table2), main = 'Frequency of the Hashtags counts', xlab = "mention times", ylab = "frequency")
+#What is the average length of the hashtags?
+vectors<- unlist(str_extract_all(dat$content, pattern = '#[[:alpha:]][[:alnum:]]*'))
+# 7.714 #11
+vectors3 <- c()
+for (i in 1:length(vectors)){
+    vectors2<- nchar(vectors[i])-1
+    vectors3<- append(vectors3, vectors2)
+  }
+summary(vectors3)
+mean(vectors3)
+#What is the most common length (i.e. the mode) of the hashtags?
+table(vectors3)
+names(table(vectors3))[table(vectors3)==max(table(vectors3))]
+##From the table, we can see that the most common length is 4 and 9 
+
+```
+
