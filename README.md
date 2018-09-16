@@ -6,7 +6,7 @@ Private Repository for HW assignments of Stat 133 (Spring 2018)
 - Github username: sunsgne0211
 - Email: address sunsgne@berkeley.edu 
 - Lab section: 101
-- GSI: Leia Organa
+- GSI: yong-jin-kweonin
 
 -----
 
